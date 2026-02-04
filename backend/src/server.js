@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const supabase = require('./config/supabase');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,6 +13,24 @@ app.use(express.json());
 // Routes
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
+});
+
+// Supabase connection test
+app.get('/api/db-health', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('__test')
+      .select('*')
+      .limit(1);
+    
+    if (error) {
+      return res.status(500).json({ status: 'ERROR', message: 'Database connection failed' });
+    }
+    
+    res.json({ status: 'OK', message: 'Database connected successfully' });
+  } catch (error) {
+    res.status(500).json({ status: 'ERROR', message: error.message });
+  }
 });
 
 // Error handling middleware
