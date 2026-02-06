@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const supabase = require('../../config/supabase');
 
 const MEMBER_SELECT_FIELDS =
@@ -17,6 +18,7 @@ async function findMemberByEmail(email) {
 async function createMember({ email, userName, password, phoneNumber, roadAddress }) {
   const passwordHash = await bcrypt.hash(password, 10);
   const payload = {
+    useruuid: crypto.randomUUID(),
     email,
     username: userName,
     password: passwordHash,
@@ -39,7 +41,7 @@ async function authenticateMember(email, password) {
   if (error) return { error };
   if (!data) return { error: { code: 'INVALID_CREDENTIALS' } };
 
-  const isMatch = await bcrypt.compare(password, data.Password);
+  const isMatch = await bcrypt.compare(password, data.password);
   if (!isMatch) return { error: { code: 'INVALID_CREDENTIALS' } };
 
   return { data };
