@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const supabase = require('./config/supabase');
+const authRoutes = require('./domains/auth/auth.routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
 });
 
+app.use('/api/auth', authRoutes);
+
 // Supabase connection test
 app.get('/api/db-health', async (req, res) => {
   try {
@@ -24,7 +27,13 @@ app.get('/api/db-health', async (req, res) => {
       .limit(1);
     
     if (error) {
-      return res.status(500).json({ status: 'ERROR', message: 'Database connection failed' });
+      console.error('Supabase Error:', error);
+      return res.status(500).json({ 
+        status: 'ERROR', 
+        message: 'Database connection failed',
+        details: error.message,
+        hint: error.hint || 'Check if the table exists and policies allow access'
+      });
     }
     
     res.json({ status: 'OK', message: 'Database connected successfully' });
