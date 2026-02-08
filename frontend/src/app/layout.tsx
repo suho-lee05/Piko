@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Footer, Header } from "@/components/layout";
 
 export const metadata = {
   title: "Piko Mall",
@@ -13,13 +14,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ko">
       <body>
-        <header>
-          <h1>Piko Mall</h1>
-        </header>
+        <Header />
         <main>{children}</main>
-        <footer>
-          <small>© Piko Mall</small>
-        </footer>
+        <Footer />
       </body>
     </html>
   );
