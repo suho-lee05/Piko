@@ -14,7 +14,7 @@ export default function Header() {
           <HeaderNav />
           <HeaderSearch />
         </div>
-        <HeaderActions isLoggedIn={false} />
+        <HeaderActions />
       </div>
     </header>
   );

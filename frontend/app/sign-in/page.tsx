@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function SignInPage() {
+export default function Page() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +114,7 @@ export default function SignInPage() {
 
         <div className="mt-6 text-center text-sm text-slate-500">
           아직 회원이 아니신가요?{" "}
-          <Link href="/sign-up" className="font-semibold text-[#00C853]">
+          <Link href="/sign-up" className="font-semibold text-[#000080]">
             회원가입
           </Link>
         </div>
