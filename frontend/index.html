@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Piko 회원가입 / 로그인</title>
+    <title>Piko 테스트 UI</title>
     <style>
       :root {
         color-scheme: light;
@@ -16,7 +16,7 @@
         color: #222;
       }
       .container {
-        max-width: 900px;
+        max-width: 1100px;
         margin: 0 auto;
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -81,7 +81,7 @@
     </style>
   </head>
   <body>
-    <h1>Piko 회원가입 / 로그인</h1>
+    <h1>Piko 테스트 UI</h1>
     <div class="container">
       <div class="card">
         <h2>회원가입</h2>
@@ -119,10 +119,57 @@
         </form>
         <div id="loginResult" class="result"></div>
       </div>
+
+      <div class="card">
+        <h2>제조사 등록</h2>
+        <form id="manufacturerForm">
+          <label for="mName">제조사명</label>
+          <input id="mName" type="text" required />
+
+          <label for="mPhone">전화번호</label>
+          <input id="mPhone" type="text" />
+
+          <label for="mAddress">주소</label>
+          <input id="mAddress" type="text" />
+
+          <label for="mContact">담당자</label>
+          <input id="mContact" type="text" />
+
+          <button type="submit">제조사 등록</button>
+        </form>
+        <button id="manufacturerListBtn" type="button">제조사 목록 조회</button>
+        <div id="manufacturerResult" class="result"></div>
+      </div>
+
+      <div class="card">
+        <h2>상품 등록</h2>
+        <form id="productForm">
+          <label for="pManufacturerId">제조사 ID</label>
+          <input id="pManufacturerId" type="number" required />
+
+          <label for="pName">상품명</label>
+          <input id="pName" type="text" required />
+
+          <label for="pStock">재고</label>
+          <input id="pStock" type="number" required />
+
+          <label for="pPrice">가격</label>
+          <input id="pPrice" type="number" required />
+
+          <label for="pStatus">상태</label>
+          <input id="pStatus" type="text" placeholder="active | inactive | soldout" />
+
+          <button type="submit">상품 등록</button>
+        </form>
+        <button id="productListBtn" type="button">상품 목록 조회</button>
+        <div id="productResult" class="result"></div>
+      </div>
     </div>
 
     <script>
-      const API_BASE = "http://localhost:5000/api/auth";
+      const AUTH_BASE = "http://localhost:5000/api/auth";
+      const MANUFACTURER_BASE = "http://localhost:5000/api/manufacturers";
+      const PRODUCT_BASE = "http://localhost:5000/api/products";
 
       function setResult(el, data) {
         el.textContent = typeof data === "string" ? data : JSON.stringify(data, null, 2);
@@ -142,7 +189,7 @@
         };
 
         try {
-          const res = await fetch(`${API_BASE}/register`, {
+          const res = await fetch(`${AUTH_BASE}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -165,11 +212,88 @@
         };
 
         try {
-          const res = await fetch(`${API_BASE}/login`, {
+          const res = await fetch(`${AUTH_BASE}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
+          const data = await res.json();
+          setResult(resultEl, data);
+        } catch (err) {
+          setResult(resultEl, err.message);
+        }
+      });
+
+      document.getElementById("manufacturerForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const resultEl = document.getElementById("manufacturerResult");
+        setResult(resultEl, "요청 중...");
+
+        const payload = {
+          manufacturerName: document.getElementById("mName").value,
+          phoneNumber: document.getElementById("mPhone").value || null,
+          address: document.getElementById("mAddress").value || null,
+          contactPerson: document.getElementById("mContact").value || null,
+        };
+
+        try {
+          const res = await fetch(`${MANUFACTURER_BASE}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          setResult(resultEl, data);
+        } catch (err) {
+          setResult(resultEl, err.message);
+        }
+      });
+
+      document.getElementById("manufacturerListBtn").addEventListener("click", async () => {
+        const resultEl = document.getElementById("manufacturerResult");
+        setResult(resultEl, "요청 중...");
+
+        try {
+          const res = await fetch(`${MANUFACTURER_BASE}`);
+          const data = await res.json();
+          setResult(resultEl, data);
+        } catch (err) {
+          setResult(resultEl, err.message);
+        }
+      });
+
+      document.getElementById("productForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const resultEl = document.getElementById("productResult");
+        setResult(resultEl, "요청 중...");
+
+        const payload = {
+          manufacturerId: Number(document.getElementById("pManufacturerId").value),
+          productName: document.getElementById("pName").value,
+          stock: Number(document.getElementById("pStock").value),
+          price: Number(document.getElementById("pPrice").value),
+          status: document.getElementById("pStatus").value || undefined,
+        };
+
+        try {
+          const res = await fetch(`${PRODUCT_BASE}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json();
+          setResult(resultEl, data);
+        } catch (err) {
+          setResult(resultEl, err.message);
+        }
+      });
+
+      document.getElementById("productListBtn").addEventListener("click", async () => {
+        const resultEl = document.getElementById("productResult");
+        setResult(resultEl, "요청 중...");
+
+        try {
+          const res = await fetch(`${PRODUCT_BASE}`);
           const data = await res.json();
           setResult(resultEl, data);
         } catch (err) {
