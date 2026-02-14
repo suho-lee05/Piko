@@ -3,9 +3,14 @@ const express = require('express');
 const cors = require('cors');
 const supabase = require('./config/supabase');
 const authRoutes = require('./domains/auth/auth.routes');
+const productRoutes = require('./domains/products/products.routes');
+const manufacturerRoutes = require('./domains/manufacturers/manufacturers.routes');
+const postRoutes = require('./domains/posts/posts.routes');
+const imageRoutes = require('./domains/images/images.routes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
+const HOST = process.env.HOST || '127.0.0.1';
 
 // Middleware
 app.use(cors());
@@ -17,6 +22,10 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/manufacturers', manufacturerRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/images', imageRoutes);
 
 // Supabase connection test
 app.get('/api/db-health', async (req, res) => {
@@ -54,6 +63,6 @@ app.use((req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server is running on http://${HOST}:${PORT}`);
 });
